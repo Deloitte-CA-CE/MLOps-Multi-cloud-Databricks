@@ -1,0 +1,12 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - cd DEV
+      - echo "****************Terraform Init**************"
+      - terraform init
+      - echo "****************Terraform Plan**************"
+      - terraform plan
+      - echo "****************Terraform Apply**************"
+      - terraform apply -auto-approve

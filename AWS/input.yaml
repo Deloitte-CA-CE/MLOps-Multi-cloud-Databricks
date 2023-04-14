@@ -1,0 +1,38 @@
+prefix: "databricksdemodev"
+tags:
+  - key: "key1"
+    value: "value1"
+  - key: "key2"
+    value: "value2"
+region: "us-east-1"
+databricks_account_id: "928e88be-c2f9-4c79-a859-e7da1bdc6bd4" 
+databricks_account_username: "michaeldearamas@outlook.com"
+databricks_acc_pwd_secret_name: "databricks-account"
+databricks_acc_pwd_key_name : "account-password"
+cidr_block: "10.4.0.0/16"
+workspace_dir_path: "/DEV"
+git_username : "ramanyala@deloitte.ca"
+git_provider : "gitHub"
+git_token_secret_name : "github"
+git_token_key_name : "github-pat"
+workspace_secret_name : "databricks"
+workspace_host_key_name: "ws-host"
+workspace_token_key_name: "ws-token"
+path_in_workspace : "/Repos/DEV/db-repo"
+branch : "dev"
+git_url : "https://github.com/Deloitte-CA-CE/databricks-code"
+node_type_id : "m5d.large"
+databrick_job_name : "mtj_with_pool"
+databrick_job_cron : "0 0 0 ? 1/1 * *"
+databrick_tz_id : "UTC"
+email_notify_on_success : ["111@abc.com", "222@abc.com"]
+email_notify_on_start : ["222@abc.com"]
+email_notify_on_failure : ["my_distribution_list@abc.com"]
+job_task_name : "name_of_my_git_task"
+job_notebook_task_path : "test"
+users:
+  - email: "ramanyala@deloitte.ca"
+    workspace_access: true
+    allow_cluster_create: true
+    allow_instance_pool_create: true
+    databricks_sql_access: true
