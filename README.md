@@ -11,8 +11,9 @@ Databricks on Azure using Multi-cloud Databricks Accelerator
 The following image represents the use of Multi-cloud Databricks
 accelerator in an automated execution mode.
 
-![](./doc/azure-images/media/image1.png){width="4.307849956255468in"
-height="2.9764588801399827in"}
+![](./doc/azure-images/media/image1.png){:width="50%"
+height="50%"}
+
 
 1.  *Azure DevOps Repository for terraform code*
 
