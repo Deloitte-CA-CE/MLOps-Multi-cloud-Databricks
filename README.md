@@ -101,8 +101,7 @@ service principal have read access to the Key vault to read the secrets.
     **databricks-iac**. You can use any name for these resources --
     these values are used while updating the **input.yaml** file.
 
-![](./doc/azure-images/media/image5.png){width="3.706819772528434in"
-height="0.674831583552056in"}
+<img src="./doc/azure-images/media/image5.png" width="50%">
 
 4.  \[OPTIONAL\] upload an existing python file or a file named test.py
     file to **databricks-code** repository.
@@ -117,22 +116,20 @@ height="0.674831583552056in"}
     If setting up multiple environments create multiple copies of the
     AZURE folder.
 
-![](./doc/azure-images/media/image6.png){width="2.2291010498687664in"
-height="1.4339632545931758in"}
+
+<img src="./doc/azure-images/media/image6.png" width="40%">
 
 7.  Once the copy action is complete in step#6 navigate to one of the
     folders, here as example **DEV** folder contents are displayed.
 
-![](./doc/azure-images/media/image7.png){width="1.2600667104111987in"
-height="1.5586942257217848in"}
+<img src="./doc/azure-images/media/image7.png" width="40%">
 
 8.  Open the **backend.tf** file in a code editor (e.g., Visual Studio
     Code) and update the values for **resource_group_name,
     storage_account_name, container_name** from step#1. The value for
     **key** can be any string of the format **\*.tfstate**
 
-![](./doc/azure-images/media/image8.png){width="3.7308005249343834in"
-height="1.9172167541557306in"}
+<img src="./doc/azure-images/media/image8.png" width="60%">
 
 9.  Expanding the **Pipeline-files** folder reveals the prebuild
     pipeline configuration files, make a copy of the
@@ -142,8 +139,8 @@ height="1.9172167541557306in"}
 
 **azure-dev-pipeline.yaml** as show below
 
-![](./doc/azure-images/media/image9.png){width="2.078261154855643in"
-height="1.904443350831146in"}
+
+<img src="./doc/azure-images/media/image9.png" width="50%">
 
 10. As shown below, within Azure DevOps **Pipelines** \> **Library**
     create a **Variable group** for dev environment and populate the
@@ -167,24 +164,22 @@ environment, multiple variable groups must be created.
   **tenant_id**                   **ARM_TENANT_ID**
   -----------------------------------------------------------------------
 
-![](./doc/azure-images/media/image10.png){width="3.343895450568679in"
-height="2.541502624671916in"}
-![](./doc/azure-images/media/image11.png){width="2.2108081802274717in"
-height="2.5636876640419946in"}
+
+<img src="./doc/azure-images/media/image10.png" width="40%"> <img src="./doc/azure-images/media/image11.png" width="40%">
 
 11. Create an Environment under Azure DevOps **Pipelines** \>
     **Environments** \> **New Environment**. The environment can be used
     to add approval gates to the terraform apply steps.
 
-![](./doc/azure-images/media/image12.png){width="6.5in"
-height="3.7729166666666667in"}
+
+<img src="./doc/azure-images/media/image12.png" width="50%">
 
 12. Back with in the local **MLOps-Multi-cloud-Databricks** folder, edit
     the **azure-dev-pipeline.yaml** file based on the information
     provided below.
 
-![](./doc/azure-images/media/image13.png){width="3.406438101487314in"
-height="2.10909230096238in"}
+<img src="./doc/azure-images/media/image13.png" width="50%">
+
 
 +------------------+---------------------------------------------------+
 | Parameter Name   | Description                                       |
@@ -216,6 +211,7 @@ height="2.10909230096238in"}
 | list_            | The path of the folder containing the terraform   |
 | sub_folders.name | code -- in this case it's the DEV folder          |
 +------------------+---------------------------------------------------+
+
 
 13. Under **DEV** folder open and edit the **input.yaml** file based on
     the details provided below
