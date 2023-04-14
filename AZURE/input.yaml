@@ -1,0 +1,26 @@
+prefix: "databricksdemodev"
+azure_region: "canadacentral"
+tag_environment: 	"Demo"
+workspace_dir_path: "/DEV"
+git_username : "ramanyala@deloitte.ca"
+git_provider : "azureDevOpsServices"
+resource_group: "demo-db-storage-rg"
+key_vault_name: "tfdbaziac"
+secret_key_name: "adotoken"
+path_in_workspace : "/Repos/DEV/db-repo"
+branch : "dev"
+git_url : "https://demo-mlops@dev.azure.com/demo-mlops/demo-databricks/_git/databrick-repo"
+node_type_id : "Standard_F4"
+databricks_job_name : "mtj_with_pool"
+databricks_job_cron : "0 0 0 ? 1/1 * *"
+databricks_tz_id : "UTC"
+email_notify_on_success : ["111@abc.com", "222@abc.com"]
+email_notify_on_start : ["222@abc.com"]
+email_notify_on_failure : ["my_distribution_list@abc.com"]
+job_task_name : "name_of_my_git_task"
+job_notebook_task_path : "test"
+users:
+  - email: "a-maconde@dmchosting.ca"
+    workspace_access: true
+  - email: "afrasool@dmchosting.ca"
+    workspace_access: true

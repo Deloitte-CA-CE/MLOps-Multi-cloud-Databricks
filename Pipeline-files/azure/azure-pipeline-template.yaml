@@ -1,0 +1,13 @@
+trigger:
+- main
+
+extends:
+  template: Pipeline-files/azure/multifolder-template.yaml
+  parameters:
+    variable_group: databricks-iac-dev
+    AgentPool: Azure Pipelines
+    ado_org: sbox0123
+    ado_project: azdatabricks
+    environment: az-databricks
+    list_sub_folders:
+     - name: DEV/

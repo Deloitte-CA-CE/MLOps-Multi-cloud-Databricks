@@ -1,0 +1,36 @@
+prefix: "databricksdemodev"
+databricks_account_id: "8e6bd9b3-ba2c-4d5f-8e5d-263d0867756f"
+databricks_google_service_account: "cbtfdb@mlops-hackathon.iam.gserviceaccount.com"
+google_project: "mlops-hackathon"
+gcp_region: "us-east4"
+google_zone: "us-east4-c"
+gke_pods_secondary_ip_range_name: "pods"
+gke_pods_secondary_ip_range: "10.1.0.0/16"
+gke_services_secondary_ip_range_name: "svc"
+gke_services_secondary_ip_range: "10.2.0.0/20"
+master_ip_range: "10.3.0.0/28"
+tag_environment: 	"Demo"
+workspace_dir_path: "/DEV"
+git_username : "ramanyala@deloitte.ca"
+git_provider : "gitHub"
+git_token_secret: "github"
+db_ws_host_secret: "dbwshost"
+db_ws_token_secret: "dbwstoken"
+path_in_workspace : "/Repos/DEV/db-repo"
+branch : "dev"
+git_url : "https://github.com/Deloitte-CA-CE/databricks-code"
+node_type_id : "n1-standard-4"
+databrick_job_name : "mtj_with_pool"
+databrick_job_cron : "0 0 0 ? 1/1 * *"
+databrick_tz_id : "UTC"
+email_notify_on_success : ["111@abc.com", "222@abc.com"]
+email_notify_on_start : ["222@abc.com"]
+email_notify_on_failure : ["my_distribution_list@abc.com"]
+job_task_name : "name_of_my_git_task"
+job_notebook_task_path : "test"
+users:
+  - email: "ramanyala@deloitte.ca"
+    workspace_access: true
+    allow_cluster_create: true
+    allow_instance_pool_create: true
+    databricks_sql_access: true

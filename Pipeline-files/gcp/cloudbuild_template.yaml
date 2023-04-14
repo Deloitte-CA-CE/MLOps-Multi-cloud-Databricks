@@ -1,0 +1,16 @@
+steps:
+- id: 'tf_init_apply'
+  name: 'devopsevd/gcloudterraform:1.0'
+  entrypoint: '/bin/bash'
+  args:
+  - '-c'
+  - | 
+    cd DEV
+    echo "****************Terraform Init**************"
+    terraform init -reconfigure
+    echo "****************Terraform Plan**************"
+    terraform plan
+    #echo "****************Terraform Apply**************"
+    terraform apply -auto-approve
+options:
+  logging: CLOUD_LOGGING_ONLY

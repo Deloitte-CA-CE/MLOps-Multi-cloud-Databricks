@@ -1,0 +1,249 @@
+parameters:
+  - name: sub_folder
+    type: string
+    default: $(System.DefaultWorkingDirectory)
+
+  - name: tf_version
+    type: string
+    default: latest
+
+  - name: tf_apply_timeout_mins
+    type: number
+    default: 30
+
+  - name: inject_flag
+    type: boolean
+    default: false
+
+  - name: tfc_flag
+    type: boolean
+    default: false
+
+  - name: terraform_extension_flag
+    type: boolean
+    default: false
+
+  - name: tf_destroy_flag
+    type: boolean
+    default: false
+
+  - name: tf_apply_flag
+    type: boolean
+    default: true
+
+  - name: smoketest_path
+    type: string
+    default: ''
+
+  - name: tf_ws
+    type: string
+    default: ''
+
+  - name: workload_folder
+    type: string
+    default: ''
+
+  - name: env
+    type: string
+    default: ''
+
+  - name: central_repo
+    type: string
+    default: BaseTemplate
+
+  - name: secure_file
+    type: string
+    default: ''
+
+  - name: input_path
+    type: string
+    default: ''
+  - name: env_key
+    type: string
+    default: ''
+
+steps:
+    - checkout: Self
+    - bash: |
+        echo "$(ls)"
+      displayName: 'List folders'
+      workingDirectory: $(System.DefaultWorkingDirectory)
+
+    # - task: TerraformInstaller@0
+    #   displayName: 'Install Terraform'
+    #   condition: eq(${{parameters.terraform_extension_flag}}, 'true')
+    #   inputs:
+    #     terraformVersion: ${{ parameters.tf_version }}
+
+    - task: Bash@3
+      displayName: Install Terraform
+      condition: eq(${{parameters.terraform_extension_flag}}, 'false')
+      inputs:
+        targetType: 'inline'
+        script: |
+              wget -qO - terraform.gpg https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/terraform-archive-keyring.gpg
+              sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/terraform-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" > /etc/apt/sources.list.d/terraform.list
+              sudo apt update
+              sudo apt install terraform
+              terraform --version
+
+    
+    # - script: | 
+    #     sed -i 's/TF_WORKSPACE/'"${{ parameters.tf_ws }}"'/g' backend.tf
+    #     sed -i 's/WORKFOLDER_NAME/'"${{ parameters.workload_folder }}"'/g' variables.tf
+    #     sed -i 's/ENV/'"${{ parameters.env }}"'/g' variables.tf
+
+    #   condition: eq(${{parameters.inject_flag}}, 'true')
+    #   displayName: 'Inject Paremeters'  
+    #   workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.sub_folder }}
+    
+    # - script: |
+    #             RC_FILE=".terraformrc"
+    #             cat > ${RC_FILE} << EOF
+    #             credentials "app.terraform.io" {
+    #               token = "$(terraform-api-token)"
+    #             }
+    #             EOF
+    #             mv .terraformrc ~/.terraformrc
+    #             export TF_CLI_CONFIG_FILE="~/.terraformrc"
+    #   name: terraform_cloud_credentials
+    #   displayName: 'Use TFC token'
+    #   condition: eq(${{parameters.tfc_flag}}, 'true')
+    #   workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.sub_folder }}
+
+    - bash: terraform -chdir=${{ parameters.sub_folder }} init -input=false
+      displayName: 'Terraform Init'
+      workingDirectory: $(System.DefaultWorkingDirectory)
+
+    # - bash: |
+    #     set -m
+    #     set -o pipefail
+    #     LOG=apply.log
+
+    #     (terraform apply -input=false 2>&1 | tee ${LOG}) &
+
+    #     run_id=''
+    #     try=6
+    #     while [ $try -gt 0 ]; do
+    #       sleep 5
+    #       content=$(egrep 'https://app.terraform.io/app/[^/]+/[^/]+/runs/' ${LOG})
+
+    #       if [ ! -z "${content}" ]; then
+    #         content=$(echo ${content} | sed 's/\x1b\[[0-9;]*m//g')
+    #         run_id=$(echo "${content}" | awk -F '/runs/' '{ print $2 }')
+    #         break
+    #       fi
+
+    #       try=$(( $try - 1 ))
+    #     done
+
+    #     echo "##vso[task.setvariable variable=TF_APPLY_RUN_ID;]${run_id}"
+
+    #     rm ${LOG}
+    #     fg
+    #     return_code=$?
+    #     exit ${return_code}
+    #   displayName: 'Terraform Apply'
+    #   workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.sub_folder }}
+    #   timeoutInMinutes: ${{ parameters.tf_apply_timeout_mins }}
+    #   condition: eq(${{parameters.tfc_flag}}, 'true')
+
+    - bash: |
+        set -m
+        set -o pipefail
+        LOG=apply.log
+
+        terraform -chdir=${{ parameters.sub_folder }} apply -auto-approve -input=false 2>&1 | tee ${LOG}
+
+        # run_id=''
+        # try=6
+        # while [ $try -gt 0 ]; do
+        #   sleep 5
+        #   content=$(egrep 'https://app.terraform.io/app/[^/]+/[^/]+/runs/' ${LOG})
+
+        #   if [ ! -z "${content}" ]; then
+        #     content=$(echo ${content} | sed 's/\x1b\[[0-9;]*m//g')
+        #     run_id=$(echo "${content}" | awk -F '/runs/' '{ print $2 }')
+        #     break
+        #   fi
+
+        #   try=$(( $try - 1 ))
+        # done
+
+        # echo "##vso[task.setvariable variable=TF_APPLY_RUN_ID;]${run_id}"
+
+        rm ${LOG}
+        # fg
+        return_code=$?
+        exit ${return_code}
+      displayName: 'Terraform Apply'
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      timeoutInMinutes: ${{ parameters.tf_apply_timeout_mins }}
+      condition: eq(${{parameters.tf_apply_flag}}, true)
+
+    - bash: |
+        set -m
+        set -o pipefail
+        LOG=apply.log
+
+        terraform -chdir=${{ parameters.sub_folder }} destroy -auto-approve -input=false 2>&1 | tee ${LOG}
+
+        # run_id=''
+        # try=6
+        # while [ $try -gt 0 ]; do
+        #   sleep 5
+        #   content=$(egrep 'https://app.terraform.io/app/[^/]+/[^/]+/runs/' ${LOG})
+
+        #   if [ ! -z "${content}" ]; then
+        #     content=$(echo ${content} | sed 's/\x1b\[[0-9;]*m//g')
+        #     run_id=$(echo "${content}" | awk -F '/runs/' '{ print $2 }')
+        #     break
+        #   fi
+
+        #   try=$(( $try - 1 ))
+        # done
+
+        # echo "##vso[task.setvariable variable=TF_APPLY_RUN_ID;]${run_id}"
+
+        rm ${LOG}
+        # fg
+        return_code=$?
+        exit ${return_code}
+      displayName: 'Terraform Destroy'
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      timeoutInMinutes: ${{ parameters.tf_apply_timeout_mins }}
+      condition: eq(${{parameters.tf_destroy_flag}}, true)
+
+    # - bash: |
+    #     current_status=$(curl -sS --header "Authorization: Bearer ${TF_TOKEN}" \
+    #                       https://app.terraform.io/api/v2/runs/${TF_APPLY_RUN_ID} \
+    #                     | jq -r .data.attributes.status)
+
+    #     if [[ "$current_status" != "confirmed" && "$current_status" != "apply_queued" && "$current_status" != "applying" ]]; then
+    #       curl -sS \
+    #         --header "Authorization: Bearer ${TF_TOKEN}" \
+    #         --header "Content-Type: application/vnd.api+json" \
+    #         --request POST \
+    #         --data '{"comment": "Run cancelled by ADO pipeline"}' \
+    #         https://app.terraform.io/api/v2/runs/${TF_APPLY_RUN_ID}/actions/cancel
+          
+    #       curl -sS \
+    #         --header "Authorization: Bearer ${TF_TOKEN}" \
+    #         --header "Content-Type: application/vnd.api+json" \
+    #         --request POST \
+    #         --data '{"comment": "Run discarded by ADO pipeline"}' \
+    #         https://app.terraform.io/api/v2/runs/${TF_APPLY_RUN_ID}/actions/discard
+    #       fi
+
+    #       exit 0
+    #   displayName: 'Cancel Terraform Apply'
+    #   workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.sub_folder }}
+    #   condition: and( always(), not(succeeded()), ne(variables['TF_APPLY_RUN_ID'], ''),eq(${{parameters.tfc_flag}}, 'true') )
+    #   env:
+    #     TF_TOKEN: $(terraform-api-token)
+    #     TF_APPLY_RUN_ID: $(TF_APPLY_RUN_ID)
+
+    # - bash: rm ~/.terraformrc
+    #   displayName: 'TFC token Cleanup'
+    #   workingDirectory: $(System.DefaultWorkingDirectory)/${{ parameters.sub_folder }}
+    #   condition: eq(${{parameters.tfc_flag}}, 'true')

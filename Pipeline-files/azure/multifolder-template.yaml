@@ -1,0 +1,154 @@
+parameters:
+  - name: AgentPool
+    type: string
+    default: CN Cloud SE
+  - name: variable_group
+    type: string
+    default: ""
+
+  - name: tf_version
+    type: string
+    default: latest
+
+  - name: environment
+    type: string
+    default: ""
+    
+  - name: tfc_flag
+    type: boolean
+    default: false
+  - name: tf_destroy_flag
+    type: boolean
+    default: false
+
+  - name: tf_apply_flag
+    type: boolean
+    default: true
+
+  - name: tf_ws
+    type: string
+    default: ""
+
+  - name: ado_org
+    type: string
+    default: ""
+
+  - name: ado_project
+    type: string
+    default: ""
+
+  - name: list_sub_folders
+    type: object
+    default: []
+
+stages:
+  - stage: terraform_plan
+    condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - job: getpathchanges
+        pool:
+          name: ${{parameters.AgentPool}}
+        steps:
+        - checkout: self
+        - bash: |
+            echo "Build.Repository.ID: "$(Build.Repository.ID)
+            echo "AccessToken: "$(System.AccessToken)
+            echo "System.PullRequest.SourceBranch: "$(System.PullRequest.SourceBranch)
+            branch=$(echo $(System.PullRequest.SourceBranch) | awk -F"refs\/heads\/" '{print $2}')
+
+            # listofchanges=$(curl -sS \
+            # --request GET "https://dev.azure.com/${{ parameters.ado_org }}/${{ parameters.ado_project }}/_apis/git/repositories/$(Build.Repository.ID)/diffs/commits?baseVersion=main&targetVersion=${branch}&api-version=6.0&Authorization=Basic BASE64PATSTRING" \
+            # --header 'Authorization: BEARER $(System.AccessToken)' \
+            # | jq -r '.changes | .[] | select(.item.isFolder!=true) |.item.path')
+            listofchanges=$(curl -sS \
+            --request GET "https://dev.azure.com/${{ parameters.ado_org }}/${{ parameters.ado_project }}/_apis/git/repositories/$(Build.Repository.ID)/diffs/commits?baseVersion=main&targetVersion=${branch}&api-version=7.0" \
+            -u ':$(System.AccessToken)' \
+            | jq -r '.changes | .[] | select(.item.isFolder!=true) |.item.path')
+            echo "list of changes: " && echo $listofchanges | tr " " "\n"
+
+            parameters_in_json=$(echo '${{ convertToJson(parameters.list_sub_folders) }}' | jq -r '.[].name' )
+
+            for file in $listofchanges
+            do
+              for folder in $parameters_in_json
+              do
+                if [[ $file =~ "${folder}" ]]; then
+                  echo $file
+                  echo "##vso[task.setvariable variable=${folder};isOutput=true]true"
+                fi
+              done
+            done
+          name: Myvariable
+          displayName: Set Variables
+
+      - ${{ each folder in parameters.list_sub_folders }}:
+        - job: tfplan_${{ replace(replace(folder.name,'/','_'),'-','_') }}
+          pool:
+            name: ${{parameters.AgentPool}}
+          dependsOn: getpathchanges
+          condition: eq(dependencies.getpathchanges.outputs['Myvariable.${{ folder.name }}'], 'true')
+          variables:
+          - group: ${{ parameters.variable_group }}
+          steps:
+          - template: steps-inject-plan.yaml
+            parameters:
+              sub_folder: ${{ folder.name }}
+              tf_version: ${{ parameters.tf_version }}
+
+  - stage: terraform_apply
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    jobs:
+      - job: getpathchanges
+        pool:
+          name: ${{parameters.AgentPool}}
+        steps:
+        - bash: |
+            echo "Build.SourceVersion: "$(Build.SourceVersion)
+            echo "Build.Repository.ID: "$(Build.Repository.ID)
+
+            # listofchanges=$(curl -sS \
+            # --request GET "https://dev.azure.com/${{ parameters.ado_org }}/${{ parameters.ado_project }}/_apis/git/repositories/$(Build.Repository.ID)/commits/$(Build.SourceVersion)/changes?api-version=6.0&Authorization=Basic BASE64PATSTRING" \
+            # --header 'Authorization: BEARER $(System.AccessToken)' \
+            # | jq -r '.changes | .[] | select(.item.isFolder!=true) |.item.path')
+            listofchanges=$(curl -sS \
+            --request GET "https://dev.azure.com/${{ parameters.ado_org }}/${{ parameters.ado_project }}/_apis/git/repositories/$(Build.Repository.ID)/commits/$(Build.SourceVersion)/changes?api-version=7.0" \
+            -u ':$(System.AccessToken)' \
+            | jq -r '.changes | .[] | select(.item.isFolder!=true) |.item.path')
+            echo "list of changes: "${listofchanges}
+
+            parameters_in_json=$(echo '${{ convertToJson(parameters.list_sub_folders) }}' | jq -r '.[].name' )
+            echo "Changed files are:"
+            for file in $listofchanges
+            do
+              for folder in $parameters_in_json
+              do
+                if [[ $file =~ "${folder}" ]]; then
+                  echo $file
+                  echo "##vso[task.setvariable variable=apply_${folder};isOutput=true]true"
+                fi
+              done
+            done
+          name: Myvariable
+          displayName: Set Variables
+
+      - ${{ each folder in parameters.list_sub_folders }}:
+        - deployment: tfapply_${{ replace(replace(folder.name,'/','_'),'-','_') }}
+          pool:
+            name: ${{parameters.AgentPool}}
+          dependsOn: getpathchanges
+          condition: eq(dependencies.getpathchanges.outputs['Myvariable.apply_${{ folder.name }}'], 'true')
+          variables:
+          - group: ${{ parameters.variable_group }}
+          workspace:
+            clean: all
+          environment: ${{ parameters.environment }}
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                - template: steps-apply-test.yaml
+                  parameters:
+                    sub_folder: ${{ folder.name }}
+                    tf_version: ${{ parameters.tf_version }}
+                    tf_destroy_flag: ${{ parameters.tf_destroy_flag }}
+                    tf_apply_flag: ${{ parameters.tf_apply_flag }}
