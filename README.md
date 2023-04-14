@@ -1,19 +1,17 @@
-## About the Multi-cloud Databricks Accelerator:
+# About the Multi-cloud Databricks Accelerator:
 
 The Multi-cloud Databricks accelerator is created to quickly setup
 Databricks using Infrastructure as Code. It has been designed keeping in
 mind the industry best practices on security and scalability while also
 considering the ease of use of the solution.
 
-This document describes in detail all the steps necessary to setup
-Databricks on Azure using Multi-cloud Databricks Accelerator
+# Set up Databricks on Azure using Multi-cloud Databricks Accelerator
 
 The following image represents the use of Multi-cloud Databricks
 accelerator in an automated execution mode.
 
-![](./doc/azure-images/media/image1.png){:width="50%"
-height="50%"}
 
+<img src="./doc/azure-images/media/image1.png" width="70%">
 
 1.  *Azure DevOps Repository for terraform code*
 
@@ -67,7 +65,7 @@ height="50%"}
 7)  Access to git repo
     <https://github.com/Deloitte-CA-CE/MLOps-Multi-cloud-Databricks>
 
-# Step to Setup Databricks
+## Step to Setup Databricks
 
 1.  Create an Azure Storage account and a container within the storage
     account to store the remote state file. The screenshot below, shows
@@ -79,8 +77,7 @@ NOTE: When using automation-execution mode, it is required that the
 service principal have read/write access to the storage
 account/container
 
-![](./doc/azure-images/media/image2.png){width="3.9388845144356956in"
-height="2.7214490376202973in"}
+<img src="./doc/azure-images/media/image2.png" width="70%">
 
 2.  Create a Key Vault and add a secret to save the git token. The
     screenshot below, shows **tfdbaziac** for Key vault and **adtoken**
@@ -94,9 +91,8 @@ service principal have read access to the Key vault to read the secrets.
   Screenshot displaying Key vault and secrets                            In the below image the service principal **celab-sbx-sp** has been
                                                                          provided access to key vault **tfdbaziac**
   ---------------------------------------------------------------------- ----------------------------------------------------------------------
-  ![](./doc/azure-images/media/image3.png){width="2.375839895013123in"   ![](./doc/azure-images/media/image4.png){width="3.531100174978128in"
-  height="2.932108486439195in"}                                          height="2.9980391513560805in"}
-
+ 
+<img src="./doc/azure-images/media/image3.png" width="50%"> <img src="./doc/azure-images/media/image3.png" width="50%">
   ---------------------------------------------------------------------------------------------------------------------------------------------
 
 3.  Create two Azure DevOps repositories one for holding databricks code
@@ -380,15 +376,7 @@ height="3.4314982502187226in"}
 ![](./doc/azure-images/media/image20.png){width="5.577823709536308in"
 height="3.0368153980752406in"}
 
-## About the Multi-cloud Databricks Accelerator:
-
-The Multi-cloud Databricks accelerator is created to quickly setup
-Databricks using Infrastructure as Code. It has been designed keeping in
-mind the industry best practices on security and scalability while also
-considering the ease of use of the solution.
-
-This document describes in detail all the steps necessary to setup
-Databricks on Google Cloud using Multi-cloud Databricks Accelerator.
+# Setup Databricks on Google Cloud using Multi-cloud Databricks Accelerator.
 
 The following image represents the use of Multi-cloud Databricks
 accelerator in an automated execution mode.
@@ -778,15 +766,7 @@ height="1.448588145231846in"}
 height="2.7342268153980753in"}
 
 
-## About the Multi-cloud Databricks Accelerator:
-
-The Multi-cloud Databricks accelerator is created to quickly setup
-Databricks using Infrastructure as Code. It has been designed keeping in
-mind the industry best practices on security and scalability while also
-considering the ease of use of the solution.
-
-This document describes in detail all the steps necessary to setup
-Databricks on AWS using Multi-cloud Databricks Accelerator.
+# Setup Databricks on AWS using Multi-cloud Databricks Accelerator.
 
 The following image represents the use of Multi-cloud Databricks
 accelerator in an automated execution mode.
