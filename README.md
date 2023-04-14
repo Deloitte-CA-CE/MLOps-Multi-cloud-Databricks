@@ -92,7 +92,7 @@ service principal have read access to the Key vault to read the secrets.
                                                                          provided access to key vault **tfdbaziac**
   ---------------------------------------------------------------------- ----------------------------------------------------------------------
  
-<img src="./doc/azure-images/media/image3.png" width="50%"> <img src="./doc/azure-images/media/image3.png" width="50%">
+<img src="./doc/azure-images/media/image3.png" width="40%">   <img src="./doc/azure-images/media/image3.png" width="40%">
   ---------------------------------------------------------------------------------------------------------------------------------------------
 
 3.  Create two Azure DevOps repositories one for holding databricks code
