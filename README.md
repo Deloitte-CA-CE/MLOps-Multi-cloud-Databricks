@@ -152,16 +152,18 @@ service principal have read access to the Key vault to read the secrets.
 NOTE: If multiple service principals are being used one for each
 environment, multiple variable groups must be created.
 
+
   -----------------------------------------------------------------------
-  **access_key**                  **ARM_ACCESS_KEY**
-  ------------------------------- ---------------------------------------
-  **client_id**                   **ARM_CLIENT_ID**
+  access_key                  ARM_ACCESS_KEY
 
-  **client_secret**               **ARM_CLIENT_SECRET**
+  client_id                   ARM_CLIENT_ID
 
-  **subscription_id**             **ARM_SUBSCRIPTION_ID**
+  client_secret             ARM_CLIENT_SECRET
 
-  **tenant_id**                   **ARM_TENANT_ID**
+  subscription_id           ARM_SUBSCRIPTION_ID
+
+  tenant_id                 ARM_TENANT_ID
+
   -----------------------------------------------------------------------
 
 
